@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recap Kas Kelas - Live Google Sheets</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- PapaParse CDN for Google Sheets CSV Processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-indigo-500 selection:text-white min-h-screen flex flex-col justify-between">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo / Class Name -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                        <i class="fa-solid font-bold text-xl fa-wallet"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-slate-900 tracking-tight block leading-tight" id="class-title">1IKRA</span>
+                        <span class="text-xs font-medium text-indigo-600 block leading-none">Class Cash Recap</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 font-medium text-sm text-slate-600">
+                    <a href="#beranda" class="px-3 py-2 rounded-lg hover:text-indigo-600 hover:bg-slate-100 transition-all">Beranda</a>
+                    <a href="#ringkasan" class="px-3 py-2 rounded-lg hover:text-indigo-600 hover:bg-slate-100 transition-all">Ringkasan</a>
+                    <a href="#transaksi" class="px-3 py-2 rounded-lg hover:text-indigo-600 hover:bg-slate-100 transition-all">Laporan</a>
+                    <a href="#statistik" class="px-3 py-2 rounded-lg hover:text-indigo-600 hover:bg-slate-100 transition-all">Statistik</a>
+                </nav>
+
+                <!-- Action & Sync Buttons -->
+                <div class="hidden md:flex items-center space-x-3">
+                    <button onclick="fetchSheetData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm px-3.5 py-2 rounded-xl transition-all flex items-center space-x-2 border border-slate-200">
+                        <i class="fa-solid fa-arrows-rotate text-xs" id="sync-icon"></i>
+                        <span>Sync Data</span>
+                    </button>
+                    <button onclick="openPayModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-4 py-2 rounded-xl shadow-sm hover:shadow transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-qrcode"></i>
+                        <span>Bayar Kas</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center space-x-2">
+                    <button onclick="fetchSheetData()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-arrows-rotate text-base" id="sync-icon-mobile"></i>
+                    </button>
+                    <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Nav -->
+        <div id="mobile-menu" class="hidden md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1">
+            <a href="#beranda" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600">Beranda</a>
+            <a href="#ringkasan" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600">Ringkasan</a>
+            <a href="#transaksi" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600">Laporan Transaksi</a>
+            <a href="#statistik" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600">Statistik</a>
+            <button onclick="openPayModal()" class="w-full mt-2 bg-indigo-600 text-white font-medium px-4 py-2 rounded-xl shadow-sm hover:bg-indigo-700 transition-all flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-qrcode"></i>
+                <span>Bayar Kas</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section id="beranda" class="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24 bg-gradient-to-b from-indigo-50/50 via-slate-50 to-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Left Hero Content -->
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100/80 text-indigo-700 text-xs font-semibold tracking-wide uppercase">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span id="sync-status">Live Google Sheets Sync</span>
+                        </div>
+                        
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                            Rekapitulasi Kas Kelas <span class="text-indigo-600 underline decoration-indigo-300 decoration-wavy decoration-2">1IKRA</span>
+                        </h1>
+                        
+                        <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                            Pantau saldo, pemasukan, dan pengeluaran kas kelas secara otomatis, real-time, dan akuntabel langsung dari database Google Spreadsheet.
+                        </p>
+                        
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
+                            <a href="#transaksi" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-center shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-file-invoice-dollar mr-2"></i>Lihat Transaksi
+                            </a>
+                            <button onclick="openPayModal()" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-semibold border border-slate-200 text-center shadow-sm transition-all hover:border-slate-300">
+                                <i class="fa-solid fa-qrcode mr-2 text-indigo-600"></i>Bayar Kas Sekarang
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Main Balance Summary Widget -->
+                    <div class="lg:col-span-5">
+                        <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800 overflow-hidden">
+                            <div class="absolute -top-12 -right-12 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                            <div class="relative z-10 space-y-6">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xs uppercase tracking-wider font-medium text-indigo-300">Total Saldo Kas</p>
+                                        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1" id="hero-saldo-saat-ini">Rp 0</h2>
+                                    </div>
+                                    <div class="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-emerald-400">
+                                        <i class="fa-solid fa-vault text-2xl"></i>
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-xs text-slate-400 font-medium block">Total Pemasukan</span>
+                                        <span class="text-lg font-bold text-emerald-400 flex items-center mt-0.5">
+                                            <i class="fa-solid fa-arrow-down-left text-xs mr-1.5"></i>
+                                            <span id="hero-total-masuk">Rp 0</span>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-slate-400 font-medium block">Total Pengeluaran</span>
+                                        <span class="text-lg font-bold text-rose-400 flex items-center mt-0.5">
+                                            <i class="fa-solid fa-arrow-up-right text-xs mr-1.5"></i>
+                                            <span id="hero-total-keluar">Rp 0</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white/5 rounded-2xl p-3.5 border border-white/10 flex items-center justify-between text-xs text-slate-300">
+                                    <span class="flex items-center">
+                                        <i class="fa-regular fa-clock text-indigo-400 mr-2"></i> Update Terakhir
+                                    </span>
+                                    <span class="font-semibold text-white" id="last-update-time">Belum dimuat</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Ringkasan Keuangan Cards Section -->
+        <section id="ringkasan" class="py-10 bg-slate-50 border-t border-slate-200/60">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900">Ringkasan Keuangan</h2>
+                    <p class="text-slate-500 text-sm mt-1">Ikhtisar angka arus kas berdasarkan catatan spreadsheet</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Card 1: Pemasukan -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Kas Masuk</span>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i class="fa-solid fa-arrow-trend-up text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="text-2xl font-bold text-slate-900" id="card-masuk">Rp 0</h3>
+                            <p class="text-xs text-slate-500 font-medium mt-1" id="card-masuk-count">0 Transaksi</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Pengeluaran -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Pengeluaran</span>
+                            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                                <i class="fa-solid fa-receipt text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="text-2xl font-bold text-slate-900" id="card-keluar">Rp 0</h3>
+                            <p class="text-xs text-slate-500 font-medium mt-1" id="card-keluar-count">0 Transaksi</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Saldo Bersih -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Saldo Sisa Kelas</span>
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                <i class="fa-solid fa-wallet text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="text-2xl font-bold text-slate-900" id="card-sisa">Rp 0</h3>
+                            <p class="text-xs text-indigo-600 font-medium mt-1">Status Saldo Tersedia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transaction Reports Table Section -->
+        <section id="transaksi" class="py-12 bg-white border-t border-slate-200/60">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">Laporan Transaksi</h2>
+                        <p class="text-slate-500 text-sm">Rincian mutasi transaksi kas kelas yang ditarik dari Google Sheets</p>
+                    </div>
+
+                    <!-- Controls: Search & Filter Tabs -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <div class="relative">
+                            <input type="text" id="tx-search" placeholder="Cari keterangan..." class="w-full sm:w-64 pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                        </div>
+
+                        <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+                            <button onclick="filterTransactions('all')" id="btn-tab-all" class="tx-tab px-3 py-1.5 rounded-lg bg-white shadow-sm text-slate-800 transition-all">Semua</button>
+                            <button onclick="filterTransactions('masuk')" id="btn-tab-masuk" class="tx-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">Masuk</button>
+                            <button onclick="filterTransactions('keluar')" id="btn-tab-keluar" class="tx-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">Keluar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    <th class="py-3.5 px-4 sm:px-6">Tanggal / Waktu</th>
+                                    <th class="py-3.5 px-4 sm:px-6">Deskripsi / Keterangan</th>
+                                    <th class="py-3.5 px-4 sm:px-6">Tipe</th>
+                                    <th class="py-3.5 px-4 sm:px-6 text-right">Jumlah (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tx-table-body" class="divide-y divide-slate-100 text-sm text-slate-700">
+                                <!-- JavaScript dynamically injected content -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Empty State / Loading State placeholder -->
+                    <div id="tx-loading" class="py-12 text-center">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-600 mb-2"></i>
+                        <p class="text-slate-500 font-medium text-sm">Menghubungkan & Mengambil data Google Sheets...</p>
+                    </div>
+                    <div id="tx-empty" class="hidden py-12 text-center">
+                        <i class="fa-solid fa-inbox text-4xl text-slate-300 mb-2"></i>
+                        <p class="text-slate-500 font-medium">Tidak ada data transaksi yang ditemukan.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section id="statistik" class="py-12 bg-slate-50 border-t border-slate-200/60">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-4 space-y-4">
+                        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Visualisasi Data</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Statistik Arus Kas</h2>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Grafik memperlihatkan perbandingan nominal masuk dan pengeluaran secara terstruktur berdasarkan baris catatan di Google Sheets.
+                        </p>
+                    </div>
+
+                    <div class="lg:col-span-8 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="relative w-full h-[320px]">
+                            <canvas id="cashChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-10 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-2 text-white">
+                    <i class="fa-solid fa-wallet text-indigo-400 text-lg"></i>
+                    <span class="font-bold text-sm">Recap Kas Kelas 1IKRA</span>
+                </div>
+                <p>&copy; 2026 Class Cash Transparency Dashboard. Live CSV Powered.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Payment Modal -->
+    <div id="payModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative">
+            <button onclick="closePayModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center space-y-3">
+                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-solid fa-qrcode"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">Pembayaran Kas Kelas</h3>
+                <p class="text-xs text-slate-500">Iuran Rutin Kas Kelas</p>
+            </div>
+
+            <div class="my-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center space-y-3">
+                <div class="bg-white p-3 rounded-xl inline-block shadow-sm border border-slate-200">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=KasClass1IKRA" alt="QRIS Kas" class="w-40 h-40 mx-auto">
+                </div>
+                <p class="text-xs font-semibold text-slate-700">Scan QRIS a.n Kas Kelas 1IKRA</p>
+            </div>
+
+            <div>
+                <a href="https://wa.me/" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 text-sm shadow-md transition-all">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Kirim Bukti Transfer</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Script File -->
+    <script src="script.js"></script>
+</body>
+</html>
