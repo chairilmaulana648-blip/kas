@@ -1,7 +1,8 @@
 const spreadsheetCsvUrls = {
   rekap:
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2tWaJ8CNvOCD6CqeyP07YV7MyVyD-QhDtw_cmkrzEBSSlvABZZQtSSPBdJtsoVjYmZmK11K7Lw1fJ/pub?gid=311741769&single=true&output=csv",
-  nunggak: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTlHVY8JOnCbzF_t_JUP8WNqW0ReyWB942H8wZoDgabSkpYmnMcqE4ZBvJnT1DsTfoQHPFGIh_CI1ON/pub?output=csv",
+  nunggak: 
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vTlHVY8JOnCbzF_t_JUP8WNqW0ReyWB942H8wZoDgabSkpYmnMcqE4ZBvJnT1DsTfoQHPFGIh_CI1ON/pub?output=csv",
 };
 
 function parseCsv(csvText) {
@@ -64,6 +65,7 @@ async function loadTable({ url, bodyId, columnCount }) {
   if (
     !url.startsWith(
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2tWaJ8CNvOCD6CqeyP07YV7MyVyD-QhDtw_cmkrzEBSSlvABZZQtSSPBdJtsoVjYmZmK11K7Lw1fJ/pub?gid=311741769&single=true&output=csv",
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTlHVY8JOnCbzF_t_JUP8WNqW0ReyWB942H8wZoDgabSkpYmnMcqE4ZBvJnT1DsTfoQHPFGIh_CI1ON/pub?output=csv",
     )
   ) {
     showMessage(tableBody, columnCount, "URL CSV Google Sheets belum diatur.");
