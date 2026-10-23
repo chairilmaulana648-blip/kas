@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tukang Nunggak</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Kas 1IKRA</h1>
+    <div id="mode-toggle">
+      <label for="mode-switch">Mode Gelap</label>
+      <input type="checkbox" id="mode-switch" />
+    </div>
+    <div id="navbar">
+      <a href="index.html">Ringkasan</a>
+      <a href="main.html">Rekap kas</a>
+      <a href="nunggak.html" aria-current="page">Tukang Nunggak</a>
+    </div>
+    <section>
+      <div id="card">
+        <h2>Tukang Nunggak</h2>
+        <p>Berikut adalah daftar tukang nunggak:</p>
+        <div
+          class="table-scroll table-scroll--compact"
+          role="region"
+          aria-label="Tabel tukang nunggak"
+          tabindex="0"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Jumlah Tunggakan</th>
+              </tr>
+            </thead>
+            <tbody id="nunggak-table-body">
+              <!-- Data akan diisi melalui JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <p>© developer by mo_nufan</p>
+    </footer>
+    <script src="app.js" defer></script>
+    <script src="theme.js" defer></script>
+  </body>
+</html>

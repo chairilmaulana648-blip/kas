@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rekap Kas</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Kas 1IKRA</h1>
+    <div id="mode-toggle">
+      <label for="mode-switch">Mode Gelap</label>
+      <input type="checkbox" id="mode-switch" />
+    </div>
+    <div id="navbar">
+      <a href="index.html">Ringkasan</a
+      ><a href="main.html" aria-current="page">Rekap kas</a>
+      <a href="nunggak.html">Tukang Nunggak</a>
+    </div>
+    <section>
+      <div id="card">
+        <h2>Rekap Kas</h2>
+        <p>Berikut adalah rekap kas 1IKRA:</p>
+        <div
+          class="table-scroll table-scroll--wide"
+          role="region"
+          aria-label="Tabel rekap kas"
+          tabindex="0"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>Pemasukan</th>
+                <th>Pengeluaran</th>
+                <th>Saldo</th>
+              </tr>
+            </thead>
+            <tbody id="rekap-table-body">
+              <!-- Data akan diisi melalui JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <p>© developer by mo_nufan</p>
+    </footer>
+    <script src="app.js" defer></script>
+    <script src="theme.js" defer></script>
+  </body>
+</html>
